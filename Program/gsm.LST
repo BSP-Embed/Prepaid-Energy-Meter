@@ -1,0 +1,98 @@
+C51 COMPILER V7.00 Beta 6  GSM                                                             04/04/2015 20:12:25 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE GSM
+OBJECT MODULE PLACED IN gsm.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE gsm.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* gsm.c:       interface program for GSM modem */
+   2          #include "gsm.h"
+*** ERROR C141 IN LINE 19 OF BUZ.H: syntax error near 'nbeep', expected ')'
+*** ERROR C318 IN LINE 18 OF includes.h: can't open file 'gps.h'
+*** ERROR C318 IN LINE 19 OF includes.h: can't open file 'i2c.H'
+   3          
+   4          //GSM AT COMMANDS
+   5          code INT8U ATCommand[]  = "AT\r"; 
+   6          code INT8U ATCall[]                     = "ATD";
+   7          code INT8U SMSCode[]            = "AT+CMGF=1\r";
+   8          code INT8U SMSNumber[]  = "AT+CMGS=\"0";
+   9          code INT8U SMSSettings[]= "AT+CNMI=2,2,2,0,0\r";
+  10          
+  11          void GSMsndmsg(INT8U *PhNum, INT8U *GSMMsg)
+  12          {
+  13   1              lcdclr();
+  14   1              lcdws("Sending SMS.....");
+  15   1              if(GSMsndphnum(PhNum)) {
+  16   2                      puts(MSG_START);
+  17   2                      puts(GSMMsg);
+  18   2                      puts(MSG_END);
+  19   2                      putchar(0x1A);
+  20   2                      GSMrxack();
+  21   2              } else  GSMerr();
+  22   1              lcdr2();
+  23   1              lcdws("  SMS SENT -->>");
+  24   1              dlyms(1000);
+  25   1      }
+  26          bit GSMinit(void)
+  27          {
+  28   1              lcdclr();
+  29   1              lcdws("Init GSM : ");
+  30   1              
+  31   1              if(GSMRxResp() && GSMmsgparam() ) {
+  32   2                      lcdws("OK");
+  33   2                      dlyms(1000);
+  34   2                      return 1;
+  35   2              } else {
+  36   2                      GSMerr();
+  37   2                      return 0;
+  38   2        } 
+  39   1      //      return 1;
+  40   1              
+  41   1      }
+  42          static void GSMerr(void)
+  43          {
+  44   1               lcdr2();
+  45   1               lcdws("FAILED !");
+  46   1      }
+  47          static bit GSMRxResp(void) {
+  48   1              puts(ATCommand);
+  49   1              while(getchar() != 'K');
+  50   1              return 1;
+  51   1      }
+  52          static bit GSMmsgparam(void){
+C51 COMPILER V7.00 Beta 6  GSM                                                             04/04/2015 20:12:25 PAGE 2   
+
+  53   1              puts(SMSCode);
+  54   1        while(getchar() != 'K');
+  55   1              puts(SMSSettings);
+  56   1        while(getchar() != 'K');
+  57   1              return 1;
+  58   1      }
+  59          static bit GSMsndphnum(INT8U *PhNum)
+  60          {
+  61   1              puts(SMSNumber);
+  62   1              puts(PhNum);
+  63   1              puts("\"\r");
+  64   1              while (getchar() != '>');
+  65   1              return 1;
+  66   1      }
+  67          static void GSMrxack(void)
+  68          {
+  69   1              INT8U x;
+  70   1              do {
+  71   2                      x = getchar();
+  72   2               }while(x != 'K' && x != 'E');
+  73   1               if(x == 'E') if(! GSMRxResp() ) GSMerr();
+  74   1      }
+  75          
+  76          bit gsm_call_gen(INT8U *PhNum)
+  77          {
+  78   1              puts(ATCall);
+  79   1              puts(PhNum);
+  80   1              puts(";\r");
+  81   1              return 1;
+  82   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

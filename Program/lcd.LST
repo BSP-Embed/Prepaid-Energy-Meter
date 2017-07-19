@@ -1,0 +1,90 @@
+C51 COMPILER V7.00 Beta 6  LCD                                                             04/04/2015 20:12:25 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN lcd.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE lcd.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include "lcd.h"
+*** ERROR C141 IN LINE 19 OF BUZ.H: syntax error near 'nbeep', expected ')'
+*** ERROR C318 IN LINE 18 OF includes.h: can't open file 'gps.h'
+*** ERROR C318 IN LINE 19 OF includes.h: can't open file 'i2c.H'
+   2          
+   3          static void  lcden(void){
+   4   1          LCD_EN_PIN = HIGH; 
+   5   1          dlyms(5);
+   6   1          LCD_EN_PIN = LOW; 
+   7   1      }
+   8          void lcdwc(INT8U LCDData){
+   9   1          LCD_RS_PIN = LOW; 
+  10   1          lcdwb(LCDData);
+  11   1      }
+  12          void lcdwd(INT8U LCDData){
+  13   1          LCD_RS_PIN = HIGH; 
+  14   1          lcdwb(LCDData);
+  15   1      }
+  16          void lcdws(INT8U *s){
+  17   1              while (*s) lcdwd(*s++);
+  18   1      }
+  19          void lcdinit(void){
+  20   1          LCD_EN_PIN          = OUTPUT_PIN; 
+  21   1          LCD_RS_PIN          = OUTPUT_PIN;
+  22   1          LCD_DATA_PORT       &=  0x0f;
+  23   1              lcdrs();
+  24   1          lcdwc(0x28);
+  25   1          lcdwc(0x0C);
+  26   1          lcdwc(0x06);
+  27   1          lcdwc(0x01); 
+  28   1              #ifdef DISPLAY_INIT
+                              lcddinit();
+                      #endif
+  31   1      }
+  32          static void lcdrs(void){
+  33   1              lcdwc(0x33);
+  34   1              lcdwc(0x33);
+  35   1              lcdwc(0x32);
+  36   1      }
+  37          void lcddinit(void){
+  38   1              INT8U i , j , adr;
+  39   1              lcdws("  INITIALIZING");
+  40   1              lcdr2();
+  41   1              for ( j = 0; j < LCD_NSCRL; j++ ) {
+  42   2                      adr = 0xc0;                                             // 2nd row, first coloumn
+  43   2                      for ( i = 0; i < 16; i++ ) {
+  44   3                              lcdwc(adr);                     
+  45   3                              lcdwd(LCD_DOT);                         
+  46   3                              if ( i < 8 ) dlyms(200+(50*i)); else dlyms(25);
+  47   3                              lcdwc(adr);                     
+  48   3                              lcdwd(LCD_SPC);                 
+  49   3                              adr++;                                  // increment display aadress
+  50   3                      }
+  51   2              }
+  52   1              lcdclr();
+C51 COMPILER V7.00 Beta 6  LCD                                                             04/04/2015 20:12:25 PAGE 2   
+
+  53   1      }
+  54          static void  lcdwb(INT8U  LCDData){
+  55   1          LCD_DATA_PORT = (LCD_DATA_PORT & 0x0F)|(LCDData & 0xF0);
+  56   1          lcden();
+  57   1          LCD_DATA_PORT = (LCD_DATA_PORT & 0x0F)|(LCDData << 4);
+  58   1          lcden();
+  59   1          dlyms(5);
+  60   1      }
+  61          void lcdclrr(INT8U rowno){
+  62   1              INT8U i;
+  63   1              switch (rowno) {
+  64   2                      case 0:
+  65   2                                      lcdr1();
+  66   2                                      break;
+  67   2                      case 1:
+  68   2                                      lcdr2();
+  69   2                                      break;
+  70   2              }
+  71   1              for (i = 0; i < 16; i++)
+  72   1                      lcdwd(LCD_SPC);
+  73   1      
+  74   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

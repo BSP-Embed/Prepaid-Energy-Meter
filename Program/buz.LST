@@ -1,0 +1,26 @@
+C51 COMPILER V7.00 Beta 6  BUZ                                                             04/04/2015 20:12:25 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE BUZ
+OBJECT MODULE PLACED IN buz.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE buz.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* buz.c: driver program for buzzer */
+   2          #include"buz.h"
+*** ERROR C318 IN LINE 18 OF includes.h: can't open file 'gps.h'
+*** ERROR C318 IN LINE 19 OF includes.h: can't open file 'i2c.H'
+*** ERROR C141 IN LINE 19 OF BUZ.H: syntax error near 'nbeep', expected ')'
+   3          void beep(INT8U nbeep, INT8U ontime){
+   4   1              while(nbeep--)  {
+   5   2                      buzon();
+   6   2                      dlyms(ontime);
+   7   2                      buzoff();
+   8   2                      dlyms(OFF_TIME);
+   9   2              }
+  10   1      }
+  11          
+  12          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

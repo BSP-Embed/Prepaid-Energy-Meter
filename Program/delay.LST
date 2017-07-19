@@ -1,0 +1,34 @@
+C51 COMPILER V7.00 Beta 6  DELAY                                                           04/04/2015 20:09:46 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN delay.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE delay.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include "delay.h"
+   2          
+   3          void dlyms(unsigned int time){
+   4   1              unsigned char pause;            //  Declare variable pause as unsigned char
+   5   1              while ( time-- ) {                      //  loop until value becomes zero       
+   6   2                      pause = 114;                    //  Initialize pause to 114 (decimal value)
+   7   2                      while ( pause-- );              //  Decrement pause until it becomes zero       
+   8   2              }                                                       
+   9   1      }                                                                
+  10          
+  11          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     21    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

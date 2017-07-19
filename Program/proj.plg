@@ -1,0 +1,62 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+E:\Temp\Projects Delivered\GSM Based Preapid Energy Meter\Program\proj.uvproj
+Project File Date:  04/04/2015
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling buz.c...
+buz.c(2): error C318: can't open file 'buz.h'
+BUZ.C(3): error C141: syntax error near 'nbeep', expected ')'
+BUZ.C(4): error C202: 'nbeep': undefined identifier
+compiling delay.c...
+compiling gsm.c...
+includes.h(13): error C318: can't open file 'buz.h'
+includes.h(15): error C318: can't open file 'uart.h'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+compiling lcd.c...
+includes.h(13): error C318: can't open file 'buz.h'
+includes.h(15): error C318: can't open file 'uart.h'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+compiling led.c...
+includes.h(13): error C318: can't open file 'buz.h'
+includes.h(15): error C318: can't open file 'uart.h'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+compiling main.c...
+includes.h(13): error C318: can't open file 'buz.h'
+includes.h(15): error C318: can't open file 'uart.h'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+Target not created
+Build target 'Target 1'
+compiling buz.c...
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+BUZ.H(19): error C141: syntax error near 'nbeep', expected ')'
+compiling gsm.c...
+BUZ.H(19): error C141: syntax error near 'nbeep', expected ')'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+compiling lcd.c...
+BUZ.H(19): error C141: syntax error near 'nbeep', expected ')'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+compiling led.c...
+BUZ.H(19): error C141: syntax error near 'nbeep', expected ')'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+compiling main.c...
+BUZ.H(19): error C141: syntax error near 'nbeep', expected ')'
+includes.h(18): error C318: can't open file 'gps.h'
+includes.h(19): error C318: can't open file 'i2c.H'
+MAIN.C(41): error C202: 'BUZ_PORT': undefined identifier
+MAIN.C(47): error C202: 'BUZ_PORT': undefined identifier
+MAIN.C(52): error C208: '_beep': too many actual parameters
+MAIN.C(67): error C208: '_beep': too many actual parameters
+Target not created

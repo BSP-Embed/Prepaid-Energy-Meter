@@ -1,0 +1,26 @@
+C51 COMPILER V7.00 Beta 6  LED                                                             04/04/2015 20:12:26 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE led.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* led.c : LED interface programs */
+   2          #include "led.h"
+*** ERROR C141 IN LINE 19 OF BUZ.H: syntax error near 'nbeep', expected ')'
+*** ERROR C318 IN LINE 18 OF includes.h: can't open file 'gps.h'
+*** ERROR C318 IN LINE 19 OF includes.h: can't open file 'i2c.H'
+   3          void blink(INT8U nblink, INT8U ontime){
+   4   1              while(nblink--){
+   5   2                      ledon();
+   6   2                      dlyms(ontime);
+   7   2                      ledoff();
+   8   2                      dlyms(100);
+   9   2              }
+  10   1      }
+  11          
+  12                  
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

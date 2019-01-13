@@ -1,0 +1,35 @@
+C51 COMPILER V7.00 Beta 6  LED                                                             01/13/2019 20:13:52 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE led.c BROWSE INCDIR(C:\Users\BSP\Desktop\Program Keil\) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* led.c : LED interface programs */
+   2          #include "led.h"
+   3          void blink(INT8U nblink, INT8U ontime){
+   4   1              while(nblink--){
+   5   2                      ledon();
+   6   2                      dlyms(ontime);
+   7   2                      ledoff();
+   8   2                      dlyms(100);
+   9   2              }
+  10   1      }
+  11          
+  12                  
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     32    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

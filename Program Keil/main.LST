@@ -1,0 +1,273 @@
+C51 COMPILER V7.00 Beta 6  MAIN                                                            01/13/2019 20:14:37 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE INCDIR(C:\Users\BSP\Desktop\Program Keil\) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* main.c:      application program for overloaded vehicle detection */
+   2          #include "main.h"
+   3          /* comment below line for release */
+   4          #define TESTING
+   5          
+   6          #ifdef TESTING
+   7                  code const INT8U PhNum1[] = "7975000000";
+   8          #else
+                      code const INT8U PhNum1[] = "9900000000";
+              #endif
+  11          
+  12          code const INT8U msg1[]                 = "Your account has been successfully recharged.";
+  13          code const INT8U msg2[]                 = "Low balance, Kindly recharge soon.";
+  14          code const INT8U msg3[]                 = "Power removed as your account balance is zero.";
+  15          code const INT8U msg4[]                 = "Power theft from your meter. Please contact KPTCL.";
+  16          
+  17          code const INT8U rch1[]                 = "RCH10";
+  18          code const INT8U rch2[]                 = "RCH35";
+  19          code const INT8U rch3[]                 = "RCH90";
+  20          code const INT8U powresm[]      = "12345";
+  21          
+  22          INT8U powunits,init_read;
+  23          extern INT8U lcdptr;
+  24          
+  25          bit low_ref_flag                        = 0;
+  26          bit zero_units_flag             = 0;
+  27          bit theftflag                           = 0;
+  28          bit buztheftflag                        = 0;
+  29          bit dispflag                                    = 1;
+  30          
+  31          void main(void)
+  32          {                                                               
+  33   1              INT8U i, x, oldread, pmsg[6], s[5];
+  34   1              init();
+  35   1              
+  36   1              pmsg[5] = '\0';
+  37   1              oldread = 0;
+  38   1              
+  39   1              while (TRUE)    {
+  40   2                      if (powunits < LOW_REF_UNITS && low_ref_flag == 0) {
+  41   3                                      buzon();
+  42   3                                      low_ref_flag = 1;
+  43   3                                      GSMsndmsg(PhNum1, msg2);
+  44   3                                      disptitle();
+  45   3                                      lcdclrr(1);
+  46   3                                      lcdws("  Low Balance");
+  47   3                                      buzoff();
+  48   3                                      dlyms(2000);
+  49   3                      }
+  50   2                      if (powunits == 0 && zero_units_flag == 0) {
+  51   3                                      zero_units_flag = 1;
+  52   3                                      beep(5,100);
+  53   3                                      loadoff();
+  54   3                                      GSMsndmsg(PhNum1, msg3);
+  55   3                                      disptitle();
+C51 COMPILER V7.00 Beta 6  MAIN                                                            01/13/2019 20:14:37 PAGE 2   
+
+  56   3                                      lcdclrr(1);
+  57   3                                      lcdws("  Zero Balance");
+  58   3                                      dlyms(2000);
+  59   3                      }
+  60   2                      if (SBUF == '<') {      
+  61   3                              i = 0;
+  62   3                              RI = 0;
+  63   3                              while ((pmsg[i++] = getchar()) != '>');
+  64   3                              pmsg[5] = '\0';
+  65   3                              lcdclr();
+  66   3                              lcdws("Message Received");
+  67   3                              beep(2, 100);
+  68   3                              lcdclrr(1);
+  69   3                              lcdr2();
+  70   3                              switch (x = verpass(pmsg)) {
+  71   4                                      case 1: case 2: case 3:
+  72   4                                                      powunits += 10 * x;
+  73   4                                                      init_read = powunits;
+  74   4                                                      TL0 = 0;
+  75   4                                              //      saveunits();
+  76   4                                                      lcdws("Recharge Success.");
+  77   4                                                      GSMsndmsg(PhNum1, msg1);
+  78   4                                                      zero_units_flag = 0;
+  79   4                                                      low_ref_flag = 0;
+  80   4                                                      if (buztheftflag == 0)
+  81   4                                                                              loadon();
+  82   4                                                      break;
+  83   4                                      case 4:
+  84   4                                                      lcdws("Power Resumed");
+  85   4                                                      beep(2, 100);
+  86   4                                                      loadon();
+  87   4                                                      buztheftflag = 0;
+  88   4                                                      TR0 = 1;                                                /* Enable Counter */
+  89   4                                                      break;
+  90   4                              default:
+  91   4                                                      lcdws("Not Verified");
+  92   4                                                      break;
+  93   4                              } 
+  94   3                              RI = 0;
+  95   3                              dlyms(1000);
+  96   3                              disptitle();
+  97   3                      }
+  98   2                      if (RI == 1) RI = 0;
+  99   2                      
+ 100   2                      if (TL0 != oldread) {
+ 101   3                              powunits = init_read - TL0;
+ 102   3      //                      saveunits();
+ 103   3                              oldread = TL0;
+ 104   3                      }
+ 105   2                      if (theftflag == 1) {
+ 106   3                              buzon();
+ 107   3                              theftflag = 0;
+ 108   3                              buztheftflag = 1;
+ 109   3                              GSMsndmsg(PhNum1, msg4);
+ 110   3                              dlyms(1000);
+ 111   3                              buzoff();
+ 112   3                              lcdclr();
+ 113   3                              lcdws(" Theft Occured");
+ 114   3                              lcdr2();
+ 115   3                              lcdws(" System Locked!");
+ 116   3                              loadoff();
+ 117   3                              TR0 = 0;                        /* Disable Counter */
+C51 COMPILER V7.00 Beta 6  MAIN                                                            01/13/2019 20:14:37 PAGE 3   
+
+ 118   3                      }
+ 119   2                      if (dispflag == 1) {
+ 120   3                              dispflag = 0;
+ 121   3                              lcdclrr(1);
+ 122   3                              lcdws("Pre:   Bal:");
+ 123   3                              lcdptr = 0xc4;
+ 124   3                              itoa(TL0,s);
+ 125   3                              lcdws(s);
+ 126   3                              itoa(powunits,s);
+ 127   3                              lcdptr = 0xcb;
+ 128   3                              lcdws(s);
+ 129   3                      }
+ 130   2                      
+ 131   2              }
+ 132   1      }
+ 133          static INT8U verpass (INT8U pmsg[])
+ 134          {
+ 135   1              if (strcmp(pmsg,rch1) == 0)
+ 136   1                      return 1;
+ 137   1              else if(strcmp(pmsg,rch2) == 0)
+ 138   1                      return 2; 
+ 139   1              else if (strcmp(pmsg,rch3) == 0)
+ 140   1                      return 3;
+ 141   1              else if (strcmp(pmsg, powresm) == 0)
+ 142   1                      return 4;
+ 143   1              else
+ 144   1                      return 0;
+ 145   1      }
+ 146          static void disptitle(void)
+ 147          {
+ 148   1              lcdclr();
+ 149   1              lcdws("PREPAID EN METER");
+ 150   1      }
+ 151          static void init(void)
+ 152          {
+ 153   1              beep(2,75);
+ 154   1              I2Cinit();
+ 155   1              tmrinit();
+ 156   1              lcdinit();                        
+ 157   1              uartinit();
+ 158   1              chkEEPROM();
+ 159   1              GSMinit();                       
+ 160   1              disptitle();
+ 161   1              starttmr();
+ 162   1              loadon();
+ 163   1      }
+ 164          static void tmrinit(void)
+ 165          {
+ 166   1              TMOD = 0x15;            /* TMR0 as counter */
+ 167   1              TH1 = 0x4B;
+ 168   1              TL1 = 0xFD;
+ 169   1              TL0 = TH0 = 0;
+ 170   1              TR0 = 1;
+ 171   1              EA = ET1 = 1;
+ 172   1      }
+ 173          /* timer overflows at every 50ms */
+ 174          static void tmr1ISR() interrupt 3 using 1
+ 175          {
+ 176   1              static INT8U i,j, mtrread;
+ 177   1              static bit monitflag;
+ 178   1              static INT16U tmrtick;
+ 179   1              
+C51 COMPILER V7.00 Beta 6  MAIN                                                            01/13/2019 20:14:37 PAGE 4   
+
+ 180   1              TH1 = 0x4B;
+ 181   1              TL1 = 0xFD;
+ 182   1              if (++i >= 2) {
+ 183   2                      i = 0;
+ 184   2                      if (++j >= 50) {
+ 185   3                              j = 0;
+ 186   3                              dispflag = 1;
+ 187   3                      }
+ 188   2                      switch(j) {
+ 189   3                              case 0: case 2: ledon(); if (buztheftflag == 1) buzon(); break;
+ 190   3                              case 1: case 3: ledoff(); if (buztheftflag == 1) buzoff(); break;
+ 191   3                      }
+ 192   2                      if (monitflag == 0) {
+ 193   3                              mtrread = TL0;
+ 194   3                              tmrtick = 0;
+ 195   3                              monitflag = 1;
+ 196   3                      } 
+ 197   2                      if (LOAD_PIN == HIGH && ++tmrtick >= 300) {
+ 198   3                              if (mtrread == TL0)
+ 199   3                                              theftflag = 1;
+ 200   3                              monitflag = 0;
+ 201   3                      }
+ 202   2              }
+ 203   1      } 
+ 204          static void chkEEPROM(void)
+ 205          {
+ 206   1              
+ 207   1              INT8U MagicNumber;
+ 208   1              #ifdef  DISP_EEPROM_MSG                                                                                                           // starting address of eeprom to check MAGIC NUMBER
+ 209   1                      lcdclr();
+ 210   1                      lcdws("Init EEPROM: ");
+ 211   1              #endif
+ 212   1      
+ 213   1              I2CRead(DEV_ADDR,MAGIC_ADDR,1,&MagicNumber);  // read magic number
+ 214   1      
+ 215   1              if (CheckEEPROM()) {                                                                    // if error in eeprom then system operates on default settings 
+ 216   2                      #ifdef  DISP_EEPROM_MSG 
+ 217   2                              lcdws("ERR");
+ 218   2                              dlyms(500);
+ 219   2                      #endif
+ 220   2              }       else {
+ 221   2                      if(MagicNumber == MAGIC_NO ) {  // PRORAMMED EEPROM - SO RETRIVE VALUES FROM EEPROM 
+ 222   3                              #ifdef  DISP_EEPROM_MSG 
+ 223   3                                      lcdws("OK");
+ 224   3                                      dlyms(500);
+ 225   3                              #endif
+ 226   3                              /*RETRIVE Random number */
+ 227   3                              I2CRead(DEV_ADDR,POW_UNITS_ADDR,1,&powunits);  // read magic number
+ 228   3                              init_read = powunits;
+ 229   3                      } else { 
+ 230   3                              #ifdef  DISP_EEPROM_MSG                 // New EEPROM Detected so loadd values
+ 231   3                                      lcdws("NEW");
+ 232   3                                      dlyms(500);
+ 233   3                              #endif
+ 234   3                              MagicNumber = MAGIC_NO;                 
+ 235   3                              powunits = init_read = DEF_POW_UNITS;
+ 236   3                  I2CWrite(DEV_ADDR,MAGIC_ADDR,1,&MagicNumber);               // now save MAGIC NUMBER to EEPROM 
+ 237   3                              I2CWrite(DEV_ADDR,POW_UNITS_ADDR,1,&powunits);
+ 238   3                      } /* END OF CHECKING NEW EEPROM AND SAVING DATA */
+ 239   2       }
+ 240   1      }
+ 241          
+C51 COMPILER V7.00 Beta 6  MAIN                                                            01/13/2019 20:14:37 PAGE 5   
+
+ 242                  
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    900    ----
+   CONSTANT SIZE    =    390    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7      17
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      6    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

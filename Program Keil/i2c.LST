@@ -1,0 +1,201 @@
+C51 COMPILER V7.00 Beta 6  I2C                                                             01/13/2019 20:13:51 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE I2C
+OBJECT MODULE PLACED IN i2c.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE i2c.c BROWSE INCDIR(C:\Users\BSP\Desktop\Program Keil\) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          //include i2c header file
+   2          
+   3          #include"i2c.h"
+   4          
+   5          //DEFINE GLOABAL VARIABLES
+   6          unsigned char bdata temp_data;
+   7          
+   8          //GLOABL VARIABLES
+   9          bit i2c_busy, no_ack, bus_fault;
+  10          
+  11          sbit LSB = temp_data^0;
+  12          sbit MSB = temp_data^7; 
+  13          
+  14          /************************************
+  15          *       Sending Stop Condition
+  16          *************************************/
+  17          void I2Cinit(void)
+  18          {
+  19   1              SDA = SCL = HIGH;
+  20   1      }
+  21          bit CheckEEPROM(void)
+  22          {
+  23   1              if(no_ack || bus_fault)
+  24   1                      return 1;
+  25   1              return 0;
+  26   1      }
+  27          void send_stop(void)
+  28          {
+  29   1              SDA = LOW;
+  30   1              SCL = HIGH;
+  31   1              dlyms(1);
+  32   1              SDA = HIGH;
+  33   1      
+  34   1              i2c_busy = 0;
+  35   1      }
+  36          /************************************
+  37          *      I2C Start Condition
+  38          *
+  39          *     NOTE: need to use it.
+  40          ************************************/
+  41          void master(int8u slave_addr)
+  42          {
+  43   1              i2c_busy = 1;
+  44   1              no_ack = 0;
+  45   1              bus_fault = 0;
+  46   1              if(!SCL||!SDA)
+  47   1                      bus_fault = 1;
+  48   1              else {
+  49   2                      SDA = LOW;
+  50   2                      dlyms(1);
+  51   2                      SCL = LOW;
+  52   2                      send_byte(slave_addr);
+  53   2              }
+  54   1      }
+  55          /*************************************
+C51 COMPILER V7.00 Beta 6  I2C                                                             01/13/2019 20:13:51 PAGE 2   
+
+  56          *     Sending a byte on I2C Bus
+  57          *************************************/
+  58          void send_byte(int8u i2c_data)
+  59          {
+  60   1              int8u i;
+  61   1              temp_data = i2c_data;
+  62   1      
+  63   1              for (i = 0; i < 8; i++) {
+  64   2                      SDA = MSB;
+  65   2                      dlyms(1);
+  66   2                      SCL = HIGH;
+  67   2                      dlyms(1);
+  68   2                      SCL = LOW;
+  69   2                      temp_data <<= 1;
+  70   2              }
+  71   1              SDA = HIGH;
+  72   1              dlyms(1);
+  73   1              SCL = HIGH;
+  74   1              dlyms(1);
+  75   1      
+  76   1              if(SDA)
+  77   1                      no_ack = 1;
+  78   1              
+  79   1              SCL = LOW;
+  80   1              dlyms(10);
+  81   1      }
+  82          
+  83          /*****************************************************
+  84          *       Sending data on I2C bus
+  85          *
+  86          *   Usage:
+  87          *         send_data(0xD0,0x10, 0x20, send_buffer)
+  88          *
+  89          *         0XD0: Slave address, Must me with write bit
+  90          *         0x10: Starting address, or sub-address
+  91          *         0x20: number of bytes to send
+  92          *         send_buffer: adress of the buffer pointer
+  93          *
+  94          ******************************************************/
+  95          void I2CWrite(int8u  slave_add, int8u sub_add, int8u bytes, int8u *data_in)
+  96          {
+  97   1              master(slave_add);
+  98   1              send_byte(sub_add);
+  99   1              if(!no_ack) {
+ 100   2                      while(bytes--) {
+ 101   3                              send_byte(*data_in++);
+ 102   3                              if(no_ack)
+ 103   3                                      break;
+ 104   3                      }
+ 105   2              }
+ 106   1              send_stop();
+ 107   1              dlyms(1);
+ 108   1      }
+ 109          
+ 110          /**********************************************
+ 111          *      Recieve a single byte from I2C Bus
+ 112          *
+ 113          *    Note: if you are going to recieve
+ 114          *          a single byte then the passing
+ 115          *          argument should be 1.
+ 116          ***********************************************/
+ 117          int8u recv_byte(int8u cnt)
+C51 COMPILER V7.00 Beta 6  I2C                                                             01/13/2019 20:13:51 PAGE 3   
+
+ 118          {
+ 119   1              int8u i;
+ 120   1              for (i = 0; i < 8; i++) {
+ 121   2                      SCL = HIGH;
+ 122   2                      dlyms(1);
+ 123   2                      LSB = SDA;
+ 124   2                      if(i < 7)
+ 125   2                              temp_data <<= 1;
+ 126   2                      SCL = LOW;
+ 127   2                      dlyms(1);
+ 128   2              }
+ 129   1              if(cnt == 1)
+ 130   1                      SDA = HIGH;
+ 131   1              else
+ 132   1                      SDA = LOW;
+ 133   1      
+ 134   1              SCL = HIGH;
+ 135   1              dlyms(1);
+ 136   1              SCL = LOW;
+ 137   1              SDA = HIGH;
+ 138   1              dlyms(10);
+ 139   1      
+ 140   1              return temp_data;
+ 141   1      }
+ 142          
+ 143          /*****************************************************
+ 144          *       Recieving bulk data on I2C bus
+ 145          *
+ 146          *   Usage:
+ 147          *         recv_data(0xD0,0x10, 0x20, send_buffer)
+ 148          *
+ 149          *         0XD0: Slave address, Must me with write bit
+ 150          *         0x10: Starting address, or sub-address
+ 151          *         0x20: number of bytes to recieve
+ 152          *         send_buffer: adress of the recieve buffer
+ 153          *                      pointer
+ 154          *
+ 155          ******************************************************/
+ 156          void I2CRead(int8u slave_add, int8u sub_add, int8u byte_cnt, int8u *recv_buf)
+ 157          {
+ 158   1              int8u i;
+ 159   1              SCL = SDA = HIGH;
+ 160   1              master(slave_add);
+ 161   1              send_byte(sub_add);
+ 162   1              SCL = SDA = 1;
+ 163   1              master(slave_add+1);
+ 164   1              if(no_ack)
+ 165   1              {       
+ 166   2                      goto exit;
+ 167   2              }
+ 168   1              for(i=0;i<byte_cnt;i++)
+ 169   1                      recv_buf[i]=recv_byte(byte_cnt-i);
+ 170   1       exit:
+ 171   1              send_stop();
+ 172   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    352    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V7.00 Beta 6  I2C                                                             01/13/2019 20:13:51 PAGE 4   
+
+   DATA SIZE        =      1      17
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

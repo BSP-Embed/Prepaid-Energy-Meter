@@ -1,0 +1,8 @@
+"buz.obj",
+"delay.obj",
+"gsm.obj",
+"i2c.obj",
+"lcd.obj",
+"led.obj",
+"main.obj" 
+TO "Program" 

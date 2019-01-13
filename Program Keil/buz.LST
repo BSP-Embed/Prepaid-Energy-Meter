@@ -1,0 +1,35 @@
+C51 COMPILER V7.00 Beta 6  BUZ                                                             01/13/2019 20:13:50 PAGE 1   
+
+
+C51 COMPILER V7.00 Beta 6, COMPILATION OF MODULE BUZ
+OBJECT MODULE PLACED IN buz.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE buz.c BROWSE INCDIR(C:\Users\BSP\Desktop\Program Keil\) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* buz.c: driver program for buzzer */
+   2          #include"buz.h"
+   3          void beep(INT8U nbeep, INT8U ontime){
+   4   1              while(nbeep--)  {
+   5   2                      buzon();
+   6   2                      dlyms(ontime);
+   7   2                      buzoff();
+   8   2                      dlyms(OFF_TIME);
+   9   2              }
+  10   1      }
+  11          
+  12          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     32    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
